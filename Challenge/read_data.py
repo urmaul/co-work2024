@@ -1,6 +1,7 @@
 import os
 import csv
 import argparse
+from typing import List
 
 # Define the Courier class
 class Courier:
@@ -27,6 +28,15 @@ class Delivery:
         return f"Delivery(ID={self.delivery_id}, Capacity={self.capacity}, Pickup Loc={self.pickup_loc}, " \
                f"Time Window Start={self.time_window_start}, Pickup Stacking Id={self.pickup_stacking_id}, Dropoff Loc={self.dropoff_loc})"
 
+class Instance:
+    def __init__(self, instance_name, couriers: List[Courier], deliveries: List[Delivery], travel_time):
+        self.instance_name = instance_name
+        self.couriers = couriers
+        self.deliveries = deliveries
+        self.travel_time = travel_time
+    
+    def __repr__(self):
+        return f"Instance({self.instance_name}, {len(self.couriers)} couriers, {len(self.deliveries)} deliveries)"
 
 # Function to load couriers from CSV using the csv module
 def load_couriers_from_csv(filepath):
@@ -109,7 +119,7 @@ def process_instance_folder(instance_folder_path):
 
 
 # Main function to loop through all instance folders
-def process_all_instances(parent_folder):
+def process_all_instances(parent_folder) -> List[Instance]:
     all_instances = []
 
     # Loop through each instance folder in the parent directory
@@ -123,16 +133,29 @@ def process_all_instances(parent_folder):
                 couriers, deliveries, travel_time = process_instance_folder(instance_folder_path)
 
                 # Add this instance's couriers, deliveries, and travel time matrix to the overall list
-                all_instances.append({
-                    'instance_name': instance_folder,
-                    'couriers': couriers,
-                    'deliveries': deliveries,
-                    'travel_time': travel_time
-                })
+                all_instances.append(Instance(
+                    instance_folder,
+                    couriers,
+                    deliveries,
+                    travel_time
+                ))
             except FileNotFoundError as e:
                 print(e)
 
     return all_instances
+
+def dump_instance_stats(parent_folder, instances: List[Instance]):
+    file = open(parent_folder + "/stats.csv", "w")
+
+    file.write(f"instance, couriers, deliveries, pickup_locations, dropoff_locations, stack_ids\n")
+    for instance in instances:
+        pickups = set(map(lambda d: d.pickup_loc, instance.deliveries))
+        dropoffs = set(map(lambda d: d.dropoff_loc, instance.deliveries))
+        stacking_ids = set(map(lambda d: d.pickup_stacking_id, instance.deliveries))
+
+        file.write(f"{instance.instance_name},{len(instance.couriers)},{len(instance.deliveries)},{len(pickups)},{len(dropoffs)},{len(stacking_ids)}\n")
+
+    file.close()
 
 
 # Entry point of the script
@@ -145,6 +168,8 @@ def main():
 
     # Process all instances
     all_instance_data = process_all_instances(args.parent_folder)
+
+    # dump_instance_stats(args.parent_folder, all_instance_data)
 
 
 # Main execution
