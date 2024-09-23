@@ -5,7 +5,7 @@ from typing import List
 
 # Define the Courier class
 class Courier:
-    def __init__(self, courier_id, location, capacity):
+    def __init__(self, courier_id: int, location: int, capacity: int):
         self.courier_id = courier_id
         self.location = location
         self.capacity = capacity
@@ -16,7 +16,7 @@ class Courier:
 
 # Define the Delivery class
 class Delivery:
-    def __init__(self, delivery_id, capacity, pickup_loc, time_window_start, pickup_stacking_id, dropoff_loc):
+    def __init__(self, delivery_id: int, capacity: int, pickup_loc: int, time_window_start: int, pickup_stacking_id: int, dropoff_loc: int):
         self.delivery_id = delivery_id
         self.capacity = capacity
         self.pickup_loc = pickup_loc
@@ -29,7 +29,7 @@ class Delivery:
                f"Time Window Start={self.time_window_start}, Pickup Stacking Id={self.pickup_stacking_id}, Dropoff Loc={self.dropoff_loc})"
 
 class Instance:
-    def __init__(self, instance_name, couriers: List[Courier], deliveries: List[Delivery], travel_time):
+    def __init__(self, instance_name: str, couriers: List[Courier], deliveries: List[Delivery], travel_time):
         self.instance_name = instance_name
         self.couriers = couriers
         self.deliveries = deliveries
@@ -157,17 +157,46 @@ def dump_instance_stats(parent_folder, instances: List[Instance]):
 
     file.close()
 
+class CourierRoute:
+    def __init__(self, courier_id: int, nodes: List[int]):
+        self.courier_id = courier_id
+        self.nodes = nodes
+
+class InstanceSolution:
+    def __init__(self, instance_name: str, courier_routes: List[CourierRoute]):
+        self.instance_name = instance_name
+        self.courier_routes = courier_routes
+
+def solve(instance: Instance) -> InstanceSolution:
+    # TODO: solve the instance
+
+    solution = InstanceSolution(
+        instance_name = instance.instance_name,
+        courier_routes = [
+            map(lambda courier: CourierRoute(courier_id=courier.courier_id, nodes=[]), instance.couriers)
+        ],
+    )
+
+    solution.courier_routes[0] = [ d.delivery_id for i in range(2) for d in instance.deliveries ]
+
+    return solution
+
 
 # Entry point of the script
 def main():
     # Parse the command-line arguments
     parser = argparse.ArgumentParser(description="Process couriers, deliveries, and travel time matrices from multiple instances.")
     parser.add_argument('parent_folder', type=str, help='Path to the parent folder containing all instance folders')
+    parser.add_argument('--result-folder', required=False, type=str, help='Path to the folder where results are written', default='Challenge/results')
 
     args = parser.parse_args()
 
     # Process all instances
     all_instance_data = process_all_instances(args.parent_folder)
+
+    for instance in all_instance_data:
+        solution = solve(instance)
+        print(solution)
 
     # dump_instance_stats(args.parent_folder, all_instance_data)
 
