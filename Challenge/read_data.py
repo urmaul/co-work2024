@@ -35,6 +35,9 @@ class Instance:
         self.deliveries = deliveries
         self.travel_time = travel_time
     
+    def complexity(self) -> int:
+        return len(self.couriers) * len(self.deliveries)
+
     def __repr__(self):
         return f"Instance({self.instance_name}, {len(self.couriers)} couriers, {len(self.deliveries)} deliveries)"
 
