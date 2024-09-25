@@ -157,30 +157,6 @@ def dump_instance_stats(parent_folder, instances: List[Instance]):
 
     file.close()
 
-class CourierRoute:
-    def __init__(self, courier_id: int, nodes: List[int]):
-        self.courier_id = courier_id
-        self.nodes = nodes
-
-class InstanceSolution:
-    def __init__(self, instance_name: str, courier_routes: List[CourierRoute]):
-        self.instance_name = instance_name
-        self.courier_routes = courier_routes
-
-def solve(instance: Instance) -> InstanceSolution:
-    # TODO: solve the instance
-
-    solution = InstanceSolution(
-        instance_name = instance.instance_name,
-        courier_routes = [
-            map(lambda courier: CourierRoute(courier_id=courier.courier_id, nodes=[]), instance.couriers)
-        ],
-    )
-
-    solution.courier_routes[0] = [ d.delivery_id for i in range(2) for d in instance.deliveries ]
-
-    return solution
-
 
 # Entry point of the script
 def main():
@@ -193,12 +169,6 @@ def main():
 
     # Process all instances
     all_instance_data = process_all_instances(args.parent_folder)
-
-    for instance in all_instance_data:
-        solution = solve(instance)
-        print(solution)
-
-    # dump_instance_stats(args.parent_folder, all_instance_data)
 
 
 # Main execution
