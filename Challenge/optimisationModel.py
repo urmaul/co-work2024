@@ -2,7 +2,7 @@
 import numpy as np
 import os
 from pyscipopt import Model, quicksum
-from Challenge.read_data import load_travel_time_from_csv, load_couriers_from_csv, load_deliveries_from_csv
+from read_data import load_travel_time_from_csv, load_couriers_from_csv, load_deliveries_from_csv
 import itertools
 
 
@@ -45,12 +45,13 @@ class ModelComputationChall:
         Q_max = np.max([self.courier_details[i].capacity for i in range(len(self.courier_details))])
 
         model = Model()
-        x = {}
-        t = {}
-        q = {}
+        # Model Variable 
+        x = {}  # Structure [(start_node, end_node, courier_no)]
+        t = {}  # Delivery time
+        q = {}  # Load carried by courier
 
         # variable: decision variable
-        for k in self.uniq_depot:           # range(len(self.uniq_deliv_point))
+        for k in self.uniq_depot:
             for val in list_all_edge:
                 # x[val[0], val[1], k] = model.addVar(name=f"x{val[0]}_{val[1]}_{k}", lb=0, ub=1)
                 x[val[0], val[1], k] = model.addVar(vtype="B", name=f"x{val[0]}_{val[1]}_{k}")
@@ -146,25 +147,22 @@ class ModelComputationChall:
 
 
 if __name__ == "__main__":
-    filefolders = os.listdir('../Challenge/training_data')
-    file_idx = 1
+    filefolders = os.listdir('./Challenge/training_data')
+    file_idx = 7
     #
     print(f"Simulation for data in {filefolders[file_idx]}")
     print("="*50)
     #
     travel_time = load_travel_time_from_csv(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'training_data',
-                                                         # filefolders[file_idx],
-                                                         'example_data',
-                                                         'traveltimes.csv'))
+                                                         filefolders[file_idx],
+                                                        'traveltimes.csv'))
     #
     courier = load_couriers_from_csv(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'training_data',
-                                                  # filefolders[file_idx],
-                                                  'example_data',
+                                                  filefolders[file_idx],
                                                   'couriers.csv'))
     #
-    deliveries = load_deliveries_from_csv(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'training_data',
-                                                       # filefolders[file_idx],
-                                                       'example_data',
+    deliveries = load_deliveries_from_csv(os.path.join(os.path.dirname(os.path.realpath(__file__)),'training_data',
+                                                       filefolders[file_idx],
                                                        'deliveries.csv'))
 
     model_inst = ModelComputationChall(courier_details=courier,
@@ -182,5 +180,10 @@ if __name__ == "__main__":
     print(f"decision var: {model.getObjective()}")
     print("="*50)
     print(f"Objective value {model.getObjVal()}")
+    
+    # Print the variable
     for var in model.getVars(transformed=True):
-        print(f"{model.getVal(var)}")
+        val = model.getVal(var)
+        if val > 1e-6:
+            var_name = str(var).replace("t_", "")
+            print(var_name, end=", ")
