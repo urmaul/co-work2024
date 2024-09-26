@@ -6,8 +6,8 @@ import random, copy
 
 
 class HeuristicModel(ModelComputationChall):
-    def __init__(self, courier_details, delivery_details, time_matrix, method):
-        super().__init__(courier_details, delivery_details, time_matrix)
+    def __init__(self, instance, method):
+        super().__init__(instance=instance)
 
     def create_heu_model(self, delivery_details, courier_ID, time_limit, max_pickup, already_served_order):
         '''

@@ -7,26 +7,26 @@ import matplotlib.pyplot as plt
 import csv
 from solution import CourierRoute, InstanceSolution
 
-data_folder = 'training_data'
-filefolders = os.listdir('./Challenge/' + data_folder)
+data_folder = 'final_test_set'
+folderpath = os.listdir('./Challenge/' + data_folder)
 file_idx = 3
 mip_model = False
 #
-print(f"Simulation for data in {filefolders[file_idx]}")
+print(f"Simulation for data in {folderpath[file_idx]}")
 print("="*50)
 #
 travel_time = load_travel_time_from_csv(os.path.join(os.path.dirname(os.path.realpath(__file__)), data_folder,
-                                                     filefolders[file_idx],
+                                                     folderpath[file_idx],
                                                      # 'example_data',
                                                      'traveltimes.csv'))
 #
 courier = load_couriers_from_csv(os.path.join(os.path.dirname(os.path.realpath(__file__)), data_folder,
-                                              filefolders[file_idx],
+                                              folderpath[file_idx],
                                               # 'example_data',
                                               'couriers.csv'))
 #
 deliveries = load_deliveries_from_csv(os.path.join(os.path.dirname(os.path.realpath(__file__)), data_folder,
-                                                   filefolders[file_idx],
+                                                   folderpath[file_idx],
                                                    # 'example_data',
                                                    'deliveries.csv'))
 
@@ -48,14 +48,12 @@ if mip_model:
     print("=" * 50)
     print(f"Objective value {model.getObjVal()}")
 else:
-    model_inst_heu = HeuristicModel(courier_details=courier,
-                                    delivery_details=deliveries,
-                                    time_matrix=travel_time,
+    model_inst_heu = HeuristicModel(instance=folderpath[file_idx],
                                     method='heu1')
     courier_order_assignment, objective_val = model_inst_heu.find_courier_assignment()
     #
     # Save the result
-    solution =  InstanceSolution(instance_name = filefolders[file_idx], 
+    solution =  InstanceSolution(instance_name = folderpath[file_idx], 
                     #  courier_routes = [courier_order_assignment[idx] for idx in courier_order_assignment])
                      courier_routes = [])
     # Courier route

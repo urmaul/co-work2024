@@ -8,9 +8,16 @@ import itertools
 
 # First step is to create a new problem
 class ModelComputationChall:
-    def __init__(self, courier_details, delivery_details, time_matrix):
-        self.courier_details = courier_details
-        self.delivery_details = delivery_details
+    def __init__(self, instance):
+        # read the data
+        PATH = f"Challenge/final_test_set/{instance}/"
+        # Provide the full file paths
+        self.courier_details = load_couriers_from_csv(PATH + "couriers.csv")
+        self.delivery_details = load_deliveries_from_csv(PATH + "deliveries.csv")
+        time_matrix = load_travel_time_from_csv(PATH + "traveltimes.csv")
+        #
+        # self.courier_details = courier_details
+        # self.delivery_details = delivery_details
         self.uniq_deliv_point = np.unique([self.delivery_details[i].dropoff_loc for i in range(len(self.delivery_details))])
         self.uniq_pickup_point = np.unique([self.delivery_details[i].pickup_loc for i in range(len(self.delivery_details))])
         self.uniq_depot = np.unique([self.courier_details[i].courier_id for i in range(len(self.courier_details))])
@@ -197,9 +204,7 @@ if __name__ == "__main__":
                                                        filefolders[file_idx],
                                                        'deliveries.csv'))
 
-    model_inst = ModelComputationChall(courier_details=courier,
-                                       delivery_details=deliveries,
-                                       time_matrix=travel_time
+    model_inst = ModelComputationChall(instance=filefolders[file_idx]
                                        )
 
     model_inst.assign_depot_to_pickup_pont()
