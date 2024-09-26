@@ -40,11 +40,13 @@ class ModelComputationChall:
         list_all_orders = [self.delivery_details[i].delivery_id for i in range(len(self.delivery_details))]
         # all edges
         list_all_edge = set_depot_to_pickup + set_pickup_delivery + set_delivery_to_depot + set_depot_ideal
+        self.list_all_edge = list_all_edge
         #
         T_tot = sum(self.time_matrix.values())
         Q_max = np.max([self.courier_details[i].capacity for i in range(len(self.courier_details))])
 
         model = Model()
+        self.model = model
         # Model Variable 
         x = {}  # Structure [(start_node, end_node, courier_no)]
         t = {}  # Delivery time
@@ -119,6 +121,8 @@ class ModelComputationChall:
         # Uncomment the following line if you want to turn off logging from PySCIPOpt:
         model.hideOutput(False)
 
+        self.x = x
+
         return model
 
     @staticmethod
@@ -145,10 +149,38 @@ class ModelComputationChall:
             depot_pickup_edge.append((new_depot_pickup, pick_up_loc))
         return depot_pickup_edge
 
+    def to_solution(self):
+        for k in self.uniq_depot:
+            courier_id = k
+
+            ifrom = courier_id
+            print("ifrom", ifrom)
+
+            while True:
+                ito = k
+                for i, xx in self.x[ifrom].items():
+                    if self.model.getVal(self.x[ifrom, i, k]) > 0.5:
+                        ito = i
+                        break
+                
+                print("ito", ito)
+                
+                if ito == k:
+                    break
+
+
+            # for ifrom, xx in self.x.items():
+            #     for ito, xxx in xx.items():
+            #         if 
+            #         print(f"Key: {key}, Value: {value}")
+
+            # for val in self.list_all_edge:
+            #     print([val[0], val[1], k], self.model.getVal(self.x[val[0], val[1], k]))
+
 
 if __name__ == "__main__":
     filefolders = os.listdir('./Challenge/training_data')
-    file_idx = 7
+    file_idx = 8
     #
     print(f"Simulation for data in {filefolders[file_idx]}")
     print("="*50)
@@ -180,10 +212,13 @@ if __name__ == "__main__":
     print(f"decision var: {model.getObjective()}")
     print("="*50)
     print(f"Objective value {model.getObjVal()}")
-    
+
+    # print(model.getVars())
+    model_inst.to_solution()
+
     # Print the variable
-    for var in model.getVars(transformed=True):
-        val = model.getVal(var)
-        if val > 1e-6:
-            var_name = str(var).replace("t_", "")
-            print(var_name, end=", ")
+    # for var in model.getVars(transformed=True):
+    #     val = model.getVal(var)
+    #     if val > 1e-6:
+    #         var_name = str(var).replace("t_", "")
+    #         print(var_name, end=", ")
