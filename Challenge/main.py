@@ -2,7 +2,7 @@ import os
 import csv
 import argparse
 from optimisationModel import ModelComputationChall
-from greedy import solve_greedy2
+from Test_lsrr import solve_greedy2
 from solution import CourierRoute, InstanceSolution
 from read_data import Instance, process_all_instances
 from typing import List
@@ -85,7 +85,7 @@ def main():
         print(f"Solving {instance.instance_name} (complexity f{instance.complexity()})...")
         solution = solve(instance)
         # print(solution)
-        print(solution_score(solution, instance))
+        # print(solution_score(solution, instance))
         write_solution(args.result_folder, solution)
     # dump_instance_stats(args.parent_folder, all_instance_data)
 
