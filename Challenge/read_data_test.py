@@ -88,7 +88,7 @@ def load_travel_time_from_csv(filepath):
 
 
 # Function to process each instance folder and look for couriers.csv, deliveries.csv, and traveltime.csv
-def process_instance_folder(instance_folder, instance_folder_path):
+def process_instance_folder(instance_folder_path):
     couriers_file = None
     deliveries_file = None
     travel_time_file = None
@@ -118,13 +118,6 @@ def process_instance_folder(instance_folder, instance_folder_path):
     deliveries = load_deliveries_from_csv(deliveries_file)
     travel_time = load_travel_time_from_csv(travel_time_file)
 
-    return Instance(
-                    instance_folder,
-                    couriers,
-                    deliveries,
-                    travel_time
-                )
-
     return couriers, deliveries, travel_time
 
 
@@ -140,8 +133,15 @@ def process_all_instances(parent_folder) -> List[Instance]:
         if os.path.isdir(instance_folder_path):
             print(f"Processing instance: {instance_folder}")
             try:
-                all_instances.append(process_instance_folder(instance_folder, instance_folder_path))
+                couriers, deliveries, travel_time = process_instance_folder(instance_folder_path)
 
+                # Add this instance's couriers, deliveries, and travel time matrix to the overall list
+                all_instances.append(Instance(
+                    instance_folder,
+                    couriers,
+                    deliveries,
+                    travel_time
+                ))
             except FileNotFoundError as e:
                 print(e)
 

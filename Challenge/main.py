@@ -2,7 +2,7 @@ import os
 import csv
 import argparse
 from optimisationModel import ModelComputationChall
-from greedy import solve_greedy2
+from Test_lsrr import solve_greedy2
 from solution import CourierRoute, InstanceSolution
 from read_data import Instance, process_all_instances
 from typing import List
@@ -76,15 +76,15 @@ def main():
     args = parser.parse_args()
 
     # Process all instances
-    all_instance_data = process_all_instances(args.parent_folder)
+    all_instance_data = procefzguhiss_all_instances(args.parent_folder)
 
     instances = sorted(all_instance_data, key=lambda instance: instance.complexity())
 
     for instance in instances:
-        print(f"Solving {instance.instance_name} (complexity f{instance.complexity()})...")
+        print(f"DFGGGSolving {instance.instance_name} (complexity f{instance.complexity()})...")
         solution = solve(instance)
-        print(solution)
-        write_solution(args.result_folder, solution)
+        #print(solution)
+        #write_solution(args.result_folder, solution)
     # dump_instance_stats(args.parent_folder, all_instance_data)
 
 
