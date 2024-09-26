@@ -9,4 +9,8 @@ class Score:
     def better_than(self, that: Score) -> bool:
         return self.hard < that.hard or (self.hard == that.hard and self.soft < that.soft)
 
-# def solution_score(solution: InstanceSolution)
+def solution_score(solution: InstanceSolution, instance: Instance) -> Score:
+    hard = 1 # TODO: check feasibility
+    soft = 1 # TODO: score
+
+    return Score(hard, soft)
