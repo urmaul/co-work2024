@@ -3,7 +3,7 @@ from typing import List
 class CourierRoute:
     def __init__(self, courier_id: int, nodes: List[int]):
         self.courier_id = courier_id
-        self.nodes = nodes
+        self.nodes = nodes # delivery ids in the order as they happen in the route
 
     def __repr__(self):
         return f"🏃‍➡️ {self.courier_id} {self.nodes}"
