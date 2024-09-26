@@ -61,7 +61,7 @@ def write_solution(result_folder: str, solution: InstanceSolution):
         if len(route.nodes) == 0:
             file.write(f"{route.courier_id}\n")
         else:
-            file.write(f"{route.courier_id},{",".join([ str(node) for node in route.nodes ])}\n")
+            file.write(f"{route.courier_id}," + (",".join([ str(node) for node in route.nodes ])) + "\n")
 
     file.close()
 
