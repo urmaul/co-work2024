@@ -3,143 +3,334 @@ import math
 import random
 import itertools
 
-# /Users/lorenareyes/Library/CloudStorage/OneDrive-UniversidaddelaSabana/workspace_python/co-work2024-main-5/Challenge/training_data/1adef166-1111-45fd-b722-0f817c7fa055
-PATH = "/Users/lorenareyes/Library/CloudStorage/OneDrive-UniversidaddelaSabana/workspace_python/co-work2024-main-5/Challenge/training_data/ae2e3aac-1651-469c-9366-879a1142ed36/"
-# 1adef166-1111-45fd-b722-0f817c7fa055
-# 1ad01be7-2897-4c4f-83f0-cfa7953cc8b8
-# medium
-# 55040a39-20d3-4346-b351-22d23633e976
-# large
-# ae2e3aac-1651-469c-9366-879a1142ed36
-
-# Provide the full file paths
-file1_path = PATH + "couriers.csv"
-file2_path = PATH + "deliveries.csv"
-file3_path = PATH + "traveltimes.csv"
-
-# Read the CSV files into dataframes
-# Read the CSV files into dataframes
-couriers_df = pd.read_csv(file1_path).apply(pd.to_numeric, errors="coerce")
-deliveries_df = pd.read_csv(file2_path).apply(pd.to_numeric, errors="coerce")
-travel_time_df = pd.read_csv(file3_path, index_col="Locations").apply(
-    pd.to_numeric, errors="coerce"
-)
-
-# Ensure the index and column types are integer for travel_time_df
-travel_time_df.index = travel_time_df.index.astype(int)
-travel_time_df.columns = travel_time_df.columns.astype(int)
-
 import numpy as np
 
-# Parameters
-# Parameters
-# Parameters - Extract columns from deliveries dataframe
-aa = pd.to_numeric(deliveries_df.iloc[:, 0], errors="coerce")
-bb = pd.to_numeric(deliveries_df.iloc[:, 2], errors="coerce")
-cc = pd.to_numeric(deliveries_df.iloc[:, 5], errors="coerce")
+def solve_greedy2_with_files(instance_name: str):
+    PATH = f"Challenge/training_data/{instance_name}/"
 
-# Calculate the max value across aa, bb, cc
-n = max(aa.max(), bb.max(), cc.max())
-pickup_locs = deliveries_df["Pickup Loc"].values.tolist()
+    # Provide the full file paths
+    file1_path = PATH + "couriers.csv"
+    file2_path = PATH + "deliveries.csv"
+    file3_path = PATH + "traveltimes.csv"
 
-c = len(couriers_df)
-# Create a c x c identity matrix
-couriers_depot = np.eye(c)
+    # Read the CSV files into dataframes
+    # Read the CSV files into dataframes
+    couriers_df = pd.read_csv(file1_path).apply(pd.to_numeric, errors="coerce")
+    deliveries_df = pd.read_csv(file2_path).apply(pd.to_numeric, errors="coerce")
+    travel_time_df = pd.read_csv(file3_path, index_col="Locations").apply(
+        pd.to_numeric, errors="coerce"
+    )
 
+    # Ensure the index and column types are integer for travel_time_df
+    travel_time_df.index = travel_time_df.index.astype(int)
+    travel_time_df.columns = travel_time_df.columns.astype(int)
 
-# Sets
-depots = couriers_df["Location"].values.tolist()
+    # Parameters
+    # Parameters
+    # Parameters - Extract columns from deliveries dataframe
+    aa = pd.to_numeric(deliveries_df.iloc[:, 0], errors="coerce")
+    bb = pd.to_numeric(deliveries_df.iloc[:, 2], errors="coerce")
+    cc = pd.to_numeric(deliveries_df.iloc[:, 5], errors="coerce")
 
-# Extract the pickup and dropoff locations as lists
-pickup_locs = deliveries_df["Pickup Loc"].values.tolist()
-dropoff_locs = deliveries_df["Dropoff Loc"].values.tolist()
+    # Calculate the max value across aa, bb, cc
+    n = max(aa.max(), bb.max(), cc.max())
+    pickup_locs = deliveries_df["Pickup Loc"].values.tolist()
 
-# "pickup_locs:", pickup_locs)
-# print("dropoff_locs:", dropoff_locs)
-
-# Use zip to combine pickup and dropoff locations element-wise into pairs
-pairs = list(zip(pickup_locs, dropoff_locs))
-
-# print("pairs:", pairs)
-# Parameters
-cap_utilization = deliveries_df["Capacity"].values.tolist()
-max_cap = couriers_df["Capacity"].values.tolist()
-
-# Create a vector for capacity utilization
-cap_vector = []
-
-# Add elements from max_cap to cap_vector
-for i in range(len(max_cap)):
-    cap_vector.append((i + 1, max_cap[i]))
-
-# Add elements from pairs to cap_vector
-for i in range(len(pairs)):
-    cap_vector.append((pairs[i][0], -cap_utilization[i]))  # For pickup location
-    cap_vector.append((pairs[i][1], cap_utilization[i]))  # For dropoff location
-
-# print("cap_vector:", cap_vector)
-V = range(1, n)
-K = range(1, c)
+    c = len(couriers_df)
+    # Create a c x c identity matrix
+    couriers_depot = np.eye(c)
 
 
-V = range(1, n)
-K = range(1, c)
+    # Sets
+    depots = couriers_df["Location"].values.tolist()
 
-EPS = 1.0e-6
+    # Extract the pickup and dropoff locations as lists
+    pickup_locs = deliveries_df["Pickup Loc"].values.tolist()
+    dropoff_locs = deliveries_df["Dropoff Loc"].values.tolist()
 
-tt = {}
+    # "pickup_locs:", pickup_locs)
+    # print("dropoff_locs:", dropoff_locs)
 
-# Iterate through the dataframe rows and columns
-for i in travel_time_df.index:
-    for j in travel_time_df.columns:
-        # Assign the value at the (i, j) position to the new dictionary
-        tt[(i, j)] = travel_time_df.loc[i, j]
+    # Use zip to combine pickup and dropoff locations element-wise into pairs
+    pairs = list(zip(pickup_locs, dropoff_locs))
 
-l = {i: 1000 for i in range(1, n + 1)}
-e = {i: 0 for i in range(1, n + 1)}
+    # print("pairs:", pairs)
+    # Parameters
+    cap_utilization = deliveries_df["Capacity"].values.tolist()
+    max_cap = couriers_df["Capacity"].values.tolist()
 
-prep = {}
+    # Create a vector for capacity utilization
+    cap_vector = []
 
-# Initialize e and prep dictionaries
-e = {i: 0 for i in range(1, n + 1)}  # Assuming n is defined elsewhere
-prep = {i: 0 for i in range(1, n + 1)}
+    # Add elements from max_cap to cap_vector
+    for i in range(len(max_cap)):
+        cap_vector.append((i + 1, max_cap[i]))
 
-for i in range(1, n + 1):
-    for j in range(0, len(pickup_locs)):
-        if deliveries_df.loc[j, "Pickup Loc"] == i:
-            a = deliveries_df.loc[j, "Time Window Start"]
-            e[i] = a  # Set e[i] only when there is a match
-            prep[i] = deliveries_df.loc[j, "Time Window Start"]
-        # Avoid overwriting non-zero values
-        elif deliveries_df.loc[j, "Pickup Loc"] != i and e[i] == 0:
-            e[i] = 0
-            prep[i] = 0
+    # Add elements from pairs to cap_vector
+    for i in range(len(pairs)):
+        cap_vector.append((pairs[i][0], -cap_utilization[i]))  # For pickup location
+        cap_vector.append((pairs[i][1], cap_utilization[i]))  # For dropoff location
 
-# print("e:", e)
-# print("l:", l)
-courier_positions = couriers_df[
-    "Location"
-].tolist()  # Starting depot locations for each courier
-# print("courier_positions:", courier_positions)
-courier_capacity = couriers_df["Capacity"].tolist()  # Capacity of each courier
-# print("courier_capacity:", courier_capacity)
+    # print("cap_vector:", cap_vector)
+    V = range(1, n)
+    K = range(1, c)
 
-# 2. Initialize courier's current load and time
-courier_loads = [0] * len(courier_positions)  # Track current loads of each courier
-courier_times = [0] * len(courier_positions)  # Track current time of each courier
 
-# print("courier_loads:", courier_loads)
-# print("courier_times:", courier_times)
-# 3. Initialize tracking for assigned deliveries:
-# - Set to track deliveries that have been assigned
-assigned_deliveries = set()
+    V = range(1, n)
+    K = range(1, c)
 
-# 4. Print initialized values for verification
-# print("Courier starting positions (depots):", courier_positions)
-# print("Courier capacities:", courier_capacity)
-# print("Courier initial times:", courier_times)
-# print("Courier initial loads:", courier_loads)
-# print("Assigned deliveries (initially empty):", assigned_deliveries)
+    EPS = 1.0e-6
+
+    tt = {}
+
+    # Iterate through the dataframe rows and columns
+    for i in travel_time_df.index:
+        for j in travel_time_df.columns:
+            # Assign the value at the (i, j) position to the new dictionary
+            tt[(i, j)] = travel_time_df.loc[i, j]
+
+    l = {i: 1000 for i in range(1, n + 1)}
+    e = {i: 0 for i in range(1, n + 1)}
+
+    prep = {}
+
+    # Initialize e and prep dictionaries
+    e = {i: 0 for i in range(1, n + 1)}  # Assuming n is defined elsewhere
+    prep = {i: 0 for i in range(1, n + 1)}
+
+    for i in range(1, n + 1):
+        for j in range(0, len(pickup_locs)):
+            if deliveries_df.loc[j, "Pickup Loc"] == i:
+                a = deliveries_df.loc[j, "Time Window Start"]
+                e[i] = a  # Set e[i] only when there is a match
+                prep[i] = deliveries_df.loc[j, "Time Window Start"]
+            # Avoid overwriting non-zero values
+            elif deliveries_df.loc[j, "Pickup Loc"] != i and e[i] == 0:
+                e[i] = 0
+                prep[i] = 0
+
+    # print("e:", e)
+    # print("l:", l)
+    courier_positions = couriers_df[
+        "Location"
+    ].tolist()  # Starting depot locations for each courier
+    # print("courier_positions:", courier_positions)
+    courier_capacity = couriers_df["Capacity"].tolist()  # Capacity of each courier
+    # print("courier_capacity:", courier_capacity)
+
+    # 2. Initialize courier's current load and time
+    courier_loads = [0] * len(courier_positions)  # Track current loads of each courier
+    courier_times = [0] * len(courier_positions)  # Track current time of each courier
+
+    # print("courier_loads:", courier_loads)
+    # print("courier_times:", courier_times)
+    # 3. Initialize tracking for assigned deliveries:
+    # - Set to track deliveries that have been assigned
+    assigned_deliveries = set()
+
+    # 4. Print initialized values for verification
+    # print("Courier starting positions (depots):", courier_positions)
+    # print("Courier capacities:", courier_capacity)
+    # print("Courier initial times:", courier_times)
+    # print("Courier initial loads:", courier_loads)
+    # print("Assigned deliveries (initially empty):", assigned_deliveries)
+
+
+    sorted_pairs = sort_pairs_by_earliest_pickup(pairs, e)
+
+    all_solutions = []
+
+    (
+        routes0,
+        updated_couriers,
+        travel_times,
+        capacities,
+        cap_utilization,
+        arrival_times,
+        total_travel_times,
+        dropoff_counts,
+    ) = improved_assignment_with_balanced_constraints(
+        pairs, courier_positions, tt, courier_capacity, e, l, cap_utilization
+    )
+
+    solution_0 = store_solution(
+        routes0, courier_positions, courier_capacity, cap_utilization, arrival_times
+    )
+
+    print(
+        "Total arrival times at drop-off locations:",
+        solution_0["total_arrival_times_dropOff_locations"],
+    )
+
+    # Validate that all deliveries are satisfied
+    if validate_all_deliveries_assigned(routes0, sorted_pairs):
+        print("All deliveries are assigned correctly!")
+    else:
+        print("Some deliveries are missing or unassigned.")
+
+    # Store the first solution
+    all_solutions.append(solution_0)
+    all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
+
+
+    (
+        routes0,
+        updated_couriers,
+        travel_times,
+        capacities,
+        cap_utilization,
+        arrival_times,
+        total_travel_times,
+        dropoff_counts,
+    ) = improved_assignment_with_balanced_constraints(
+        sorted_pairs, courier_positions, tt, courier_capacity, e, l, cap_utilization
+    )
+
+    solution_1 = store_solution(
+        routes0, courier_positions, courier_capacity, cap_utilization, arrival_times
+    )
+
+    print(
+        "Total arrival times at drop-off locations:",
+        solution_1["total_arrival_times_dropOff_locations"],
+    )
+
+    # Validate that all deliveries are satisfied
+    if validate_all_deliveries_assigned(routes0, sorted_pairs):
+        print("All deliveries are assigned correctly!")
+    else:
+        print("Some deliveries are missing or unassigned.")
+
+    # Store the first solution
+    all_solutions.append(solution_1)
+    all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
+
+    (
+        optimized_routes,
+        updated_couriers,
+        updated_capacities,
+        updated_cap_utilization,
+        updated_arrival_times,
+    ) = optimize_routes_between_couriers(
+        routes0, updated_couriers, capacities, cap_utilization, travel_times, arrival_times
+    )
+
+    # Validate that all deliveries are satisfied
+    if validate_all_deliveries_assigned(optimized_routes, sorted_pairs):
+        print("All deliveries are assigned correctly!")
+    else:
+        print("Some deliveries are missing or unassigned.")
+
+    solution_2 = store_solution(
+        optimized_routes,
+        courier_positions,
+        courier_capacity,
+        cap_utilization,
+        updated_arrival_times,
+    )
+
+    print(
+        "Total arrival times at drop-off locations sol 2:",
+        solution_2["total_arrival_times_dropOff_locations"],
+    )
+
+    # Store the second solution
+    all_solutions.append(solution_2)
+    all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
+
+    (
+        optimized_routes2,
+        updated_couriers,
+        updated_capacities,
+        updated_cap_utilization,
+        updated_arrival_times,
+    ) = optimize_routes_randomly(
+        optimized_routes,
+        updated_couriers,
+        capacities,
+        cap_utilization,
+        travel_times,
+        updated_arrival_times,
+    )
+
+    # Initialize the best solution with the initial optimized routes
+    best_solution = store_solution(
+        optimized_routes2,
+        courier_positions,
+        courier_capacity,
+        cap_utilization,
+        updated_arrival_times,
+    )
+    best_total_arrival_time = all_solutions[0]["total_arrival_times_dropOff_locations"]
+
+
+    num_iterations = 20
+
+    for iteration in range(num_iterations):
+        (
+            new_optimized_routes2,
+            new_updated_couriers,
+            new_updated_capacities,
+            new_updated_cap_utilization,
+            new_updated_arrival_times,
+        ) = optimize_routes_randomly(
+            routes0,
+            updated_couriers,
+            capacities,
+            cap_utilization,
+            travel_times,
+            updated_arrival_times,
+        )
+
+        # Store the new solution
+        new_solution = store_solution(
+            new_optimized_routes2,
+            courier_positions,
+            courier_capacity,
+            cap_utilization,
+            new_updated_arrival_times,
+        )
+
+        # Calculate the total arrival time for the new solution
+        new_total_arrival_time = new_solution["total_arrival_times_dropOff_locations"]
+
+        # Check if the new solution is better than the best solution
+        if new_total_arrival_time < best_total_arrival_time:
+            optimized_routes2 = new_optimized_routes2
+            best_solution = new_solution
+            best_total_arrival_time = new_total_arrival_time
+            print(
+                f"Iteration {iteration + 1}: Improved total arrival time to {best_total_arrival_time}"
+            )
+
+    # Validate that all deliveries are satisfied
+    if validate_all_deliveries_assigned(optimized_routes2, sorted_pairs):
+        print("All deliveries are assigned correctly!")
+    else:
+        print("Some deliveries are missing or unassigned.")
+
+    solution_3 = best_solution
+
+    print(
+        "Total arrival times at drop-off locations sol 3:",
+        solution_3["total_arrival_times_dropOff_locations"],
+    )
+
+    # Store the third solution
+    all_solutions.append(solution_3)
+
+    # Sort all solutions by total arrival times at drop-off locations
+    all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
+
+    print(
+        "best sol: total arrival times at drop-off location",
+        all_solutions[0]["total_arrival_times_dropOff_locations"],
+    )
+    for courier_id, route in all_solutions[0]["routes"].items():
+        if route:  # Check if the route is not empty
+            print(f"Courier {courier_id}'s length route: {len(route)}")
+            # print(f"Courier {courier_id}'s route: {route}")
+
 
 
 def sort_pairs_by_earliest_pickup(pairs, e):
@@ -312,7 +503,7 @@ def improved_assignment_with_balanced_constraints(
             if (
                 current_capacity
                 >= abs(delivery_capacity)  # Ensure enough capacity for pickup
-                and dropoff_counts[courier_id] < 8  # Ensure no more than 8 drop-offs
+                and dropoff_counts[courier_id] < 4  # Ensure no more than X drop-offs
                 and current_time < 180  # Ensure total time does not exceed 180 minutes
             ):
                 # Calculate travel time for reassignment
@@ -345,8 +536,6 @@ def improved_assignment_with_balanced_constraints(
         dropoff_counts,
     )
 
-
-sorted_pairs = sort_pairs_by_earliest_pickup(pairs, e)
 
 ################ Second part ###########
 
@@ -537,195 +726,14 @@ def optimize_routes_randomly(
     return optimized_routes, couriers, capacities, cap_utilization, arrival_times
 
 
-all_solutions = []
+if __name__ == "__main__":
+    # /Users/lorenareyes/Library/CloudStorage/OneDrive-UniversidaddelaSabana/workspace_python/co-work2024-main-5/Challenge/training_data/1adef166-1111-45fd-b722-0f817c7fa055
+    # PATH = "Challenge/training_data/ae2e3aac-1651-469c-9366-879a1142ed36/"
+    solve_greedy2_with_files("ae2e3aac-1651-469c-9366-879a1142ed36")
+    # 1adef166-1111-45fd-b722-0f817c7fa055
+    # 1ad01be7-2897-4c4f-83f0-cfa7953cc8b8
+    # medium
+    # 55040a39-20d3-4346-b351-22d23633e976
+    # large
+    # ae2e3aac-1651-469c-9366-879a1142ed36
 
-(
-    routes0,
-    updated_couriers,
-    travel_times,
-    capacities,
-    cap_utilization,
-    arrival_times,
-    total_travel_times,
-    dropoff_counts,
-) = improved_assignment_with_balanced_constraints(
-    pairs, courier_positions, tt, courier_capacity, e, l, cap_utilization
-)
-
-solution_0 = store_solution(
-    routes0, courier_positions, courier_capacity, cap_utilization, arrival_times
-)
-
-print(
-    "Total arrival times at drop-off locations:",
-    solution_0["total_arrival_times_dropOff_locations"],
-)
-
-# Validate that all deliveries are satisfied
-if validate_all_deliveries_assigned(routes0, sorted_pairs):
-    print("All deliveries are assigned correctly!")
-else:
-    print("Some deliveries are missing or unassigned.")
-
-# Store the first solution
-all_solutions.append(solution_0)
-all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
-
-
-(
-    routes0,
-    updated_couriers,
-    travel_times,
-    capacities,
-    cap_utilization,
-    arrival_times,
-    total_travel_times,
-    dropoff_counts,
-) = improved_assignment_with_balanced_constraints(
-    sorted_pairs, courier_positions, tt, courier_capacity, e, l, cap_utilization
-)
-
-solution_1 = store_solution(
-    routes0, courier_positions, courier_capacity, cap_utilization, arrival_times
-)
-
-print(
-    "Total arrival times at drop-off locations:",
-    solution_1["total_arrival_times_dropOff_locations"],
-)
-
-# Validate that all deliveries are satisfied
-if validate_all_deliveries_assigned(routes0, sorted_pairs):
-    print("All deliveries are assigned correctly!")
-else:
-    print("Some deliveries are missing or unassigned.")
-
-# Store the first solution
-all_solutions.append(solution_1)
-all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
-
-(
-    optimized_routes,
-    updated_couriers,
-    updated_capacities,
-    updated_cap_utilization,
-    updated_arrival_times,
-) = optimize_routes_between_couriers(
-    routes0, updated_couriers, capacities, cap_utilization, travel_times, arrival_times
-)
-
-# Validate that all deliveries are satisfied
-if validate_all_deliveries_assigned(optimized_routes, sorted_pairs):
-    print("All deliveries are assigned correctly!")
-else:
-    print("Some deliveries are missing or unassigned.")
-
-solution_2 = store_solution(
-    optimized_routes,
-    courier_positions,
-    courier_capacity,
-    cap_utilization,
-    updated_arrival_times,
-)
-
-print(
-    "Total arrival times at drop-off locations sol 2:",
-    solution_2["total_arrival_times_dropOff_locations"],
-)
-
-# Store the second solution
-all_solutions.append(solution_2)
-all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
-
-(
-    optimized_routes2,
-    updated_couriers,
-    updated_capacities,
-    updated_cap_utilization,
-    updated_arrival_times,
-) = optimize_routes_randomly(
-    optimized_routes,
-    updated_couriers,
-    capacities,
-    cap_utilization,
-    travel_times,
-    updated_arrival_times,
-)
-
-# Initialize the best solution with the initial optimized routes
-best_solution = store_solution(
-    optimized_routes2,
-    courier_positions,
-    courier_capacity,
-    cap_utilization,
-    updated_arrival_times,
-)
-best_total_arrival_time = all_solutions[0]["total_arrival_times_dropOff_locations"]
-
-
-num_iterations = 20
-
-for iteration in range(num_iterations):
-    (
-        new_optimized_routes2,
-        new_updated_couriers,
-        new_updated_capacities,
-        new_updated_cap_utilization,
-        new_updated_arrival_times,
-    ) = optimize_routes_randomly(
-        routes0,
-        updated_couriers,
-        capacities,
-        cap_utilization,
-        travel_times,
-        updated_arrival_times,
-    )
-
-    # Store the new solution
-    new_solution = store_solution(
-        new_optimized_routes2,
-        courier_positions,
-        courier_capacity,
-        cap_utilization,
-        new_updated_arrival_times,
-    )
-
-    # Calculate the total arrival time for the new solution
-    new_total_arrival_time = new_solution["total_arrival_times_dropOff_locations"]
-
-    # Check if the new solution is better than the best solution
-    if new_total_arrival_time < best_total_arrival_time:
-        optimized_routes2 = new_optimized_routes2
-        best_solution = new_solution
-        best_total_arrival_time = new_total_arrival_time
-        print(
-            f"Iteration {iteration + 1}: Improved total arrival time to {best_total_arrival_time}"
-        )
-
-# Validate that all deliveries are satisfied
-if validate_all_deliveries_assigned(optimized_routes2, sorted_pairs):
-    print("All deliveries are assigned correctly!")
-else:
-    print("Some deliveries are missing or unassigned.")
-
-solution_3 = best_solution
-
-print(
-    "Total arrival times at drop-off locations sol 3:",
-    solution_3["total_arrival_times_dropOff_locations"],
-)
-
-# Store the third solution
-all_solutions.append(solution_3)
-
-# Sort all solutions by total arrival times at drop-off locations
-all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
-
-print(
-    "best sol: total arrival times at drop-off location",
-    all_solutions[0]["total_arrival_times_dropOff_locations"],
-)
-for courier_id, route in all_solutions[0]["routes"].items():
-    if route:  # Check if the route is not empty
-        print(f"Courier {courier_id}'s length route: {len(route)}")
-        # print(f"Courier {courier_id}'s route: {route}")

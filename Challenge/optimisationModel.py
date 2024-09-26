@@ -151,8 +151,31 @@ class ModelComputationChall:
 
     def to_solution(self):
         for k in self.uniq_depot:
-            for val in self.list_all_edge:
-                print([val[0], val[1], k], self.model.getVal(self.x[val[0], val[1], k]))
+            courier_id = k
+
+            ifrom = courier_id
+            print("ifrom", ifrom)
+
+            while True:
+                ito = k
+                for i, xx in self.x[ifrom].items():
+                    if self.model.getVal(self.x[ifrom, i, k]) > 0.5:
+                        ito = i
+                        break
+                
+                print("ito", ito)
+                
+                if ito == k:
+                    break
+
+
+            # for ifrom, xx in self.x.items():
+            #     for ito, xxx in xx.items():
+            #         if 
+            #         print(f"Key: {key}, Value: {value}")
+
+            # for val in self.list_all_edge:
+            #     print([val[0], val[1], k], self.model.getVal(self.x[val[0], val[1], k]))
 
 
 if __name__ == "__main__":
