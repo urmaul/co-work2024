@@ -14,4 +14,4 @@ class InstanceSolution:
         self.courier_routes = courier_routes
 
     def __repr__(self):
-        return f"🏙️ {self.instance_name}:\n{"\n".join([str(r) for r in self.courier_routes])}"
+        return f"🏙️ {self.instance_name}:\n"+("\n".join([str(r) for r in self.courier_routes]))
