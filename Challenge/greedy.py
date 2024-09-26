@@ -345,7 +345,9 @@ def solve_greedy2(instance: Instance):
         # if route:  # Check if the route is not empty
         #     print(f"Courier {courier_id}'s length route: {len(route)}", route)
 
-    return InstanceSolution(instance.instance_name, courier_routes)
+    solution = InstanceSolution(instance.instance_name, courier_routes)
+    solution.algo = "greedy"
+    return solution
 
     # print(
     #     "best sol: total arrival times at drop-off location",

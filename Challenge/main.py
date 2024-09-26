@@ -7,11 +7,13 @@ from solution import CourierRoute, InstanceSolution
 from read_data import Instance, process_all_instances
 from typing import List
 from score import solution_score, Score
+from sian import solve_sian
 
 def solve(instance: Instance) -> InstanceSolution:
     solutions = [
         solve_dumb(instance),
         solve_greedy2(instance),
+        solve_sian(instance),
     ]
 
     best_solution = solutions[0]
@@ -27,10 +29,11 @@ def solve(instance: Instance) -> InstanceSolution:
 def solve_dumb(instance: Instance) -> InstanceSolution:
     solution = InstanceSolution(
         instance_name = instance.instance_name,
-        courier_routes = list(map(lambda courier: CourierRoute(courier_id=courier.courier_id, nodes=[]), instance.couriers)),
+        courier_routes = [CourierRoute(courier_id=courier.courier_id, nodes=[]) for courier in instance.couriers],
     )
 
     solution.courier_routes[0].nodes = [ d.delivery_id for i in range(2) for d in instance.deliveries ]
+    solution.algo = "dumb"
 
     return solution
 
@@ -89,7 +92,7 @@ def main():
         print(f"Solving {i}/{count} {instance.instance_name} (complexity f{instance.complexity()})...")
         solution = solve(instance)
         # print(solution)
-        # print(solution_score(solution, instance))
+        print("Score", solution_score(solution, instance), solution.algo)
         write_solution(args.result_folder, solution)
     # dump_instance_stats(args.parent_folder, all_instance_data)
 

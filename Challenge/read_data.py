@@ -35,6 +35,14 @@ class Instance:
         self.couriers = couriers
         self.deliveries = deliveries
         self.travel_time = travel_time
+
+        self.couriers_by_id = {}
+        for c in self.couriers:
+            self.couriers_by_id[c.courier_id] = c
+
+        self.deliveries_by_id = {}
+        for d in self.deliveries:
+            self.deliveries_by_id[d.delivery_id] = d
     
     def complexity(self) -> int:
         return len(self.couriers) * len(self.deliveries)
