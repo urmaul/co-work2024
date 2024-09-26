@@ -2,18 +2,27 @@ import os
 import csv
 import argparse
 from optimisationModel import ModelComputationChall
-from Test_lsrr import solve_greedy2
+from greedy import solve_greedy2
 from solution import CourierRoute, InstanceSolution
 from read_data import Instance, process_all_instances
 from typing import List
 from score import solution_score, Score
 
 def solve(instance: Instance) -> InstanceSolution:
-    # TODO: solve the instance
+    solutions = [
+        solve_dumb(instance),
+        solve_greedy2(instance),
+    ]
 
-    # return solve_dumb(instance)
-    # return solve_via_om(instance)
-    return solve_greedy2(instance)
+    best_solution = solutions[0]
+    best_score = Score(1000, 1000)
+    for solution in solutions:
+        score = solution_score(solution, instance)
+        if score.better_than(best_score):
+            best_score = score
+            best_solution = solution
+
+    return best_solution
 
 def solve_dumb(instance: Instance) -> InstanceSolution:
     solution = InstanceSolution(
@@ -81,8 +90,10 @@ def main():
 
     instances = sorted(all_instance_data, key=lambda instance: instance.complexity())
 
-    for instance in instances:
-        print(f"Solving {instance.instance_name} (complexity f{instance.complexity()})...")
+    count = len(instances)
+
+    for i, instance in enumerate(instances):
+        print(f"Solving {i}/{count} {instance.instance_name} (complexity f{instance.complexity()})...")
         solution = solve(instance)
         # print(solution)
         # print(solution_score(solution, instance))
