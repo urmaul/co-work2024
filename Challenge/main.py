@@ -2,6 +2,7 @@ import os
 import csv
 import argparse
 from optimisationModel import ModelComputationChall
+from greedy import solve_greedy2_with_files
 from solution import CourierRoute, InstanceSolution
 from read_data import Instance, process_all_instances
 from typing import List
@@ -42,6 +43,14 @@ def solve_via_om(instance: Instance) -> InstanceSolution:
 
     # print(model.getVars())
     return model_inst.to_solution()
+
+
+def solve_greedy(instance: Instance) -> InstanceSolution:
+    # TODO: solve the instance
+
+    # return solve_dumb(instance)
+    return solve_greedy2_with_files(instance)
+
 
 def write_solution(result_folder: str, solution: InstanceSolution):
     file = open(f"{result_folder}/f{solution.instance_name}.csv", "w")
