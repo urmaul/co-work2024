@@ -4,9 +4,11 @@ import random
 import itertools
 
 import numpy as np
+from read_data import Instance, Courier, Delivery
+from solution import CourierRoute, InstanceSolution
 
-def solve_greedy2_with_files(instance_name: str):
-    PATH = f"Challenge/training_data/{instance_name}/"
+def solve_greedy2(instance: Instance):
+    PATH = f"Challenge/training_data/{instance.instance_name}/"
 
     # Provide the full file paths
     file1_path = PATH + "couriers.csv"
@@ -322,13 +324,35 @@ def solve_greedy2_with_files(instance_name: str):
     # Sort all solutions by total arrival times at drop-off locations
     all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
 
-    print(
-        "best sol: total arrival times at drop-off location",
-        all_solutions[0]["total_arrival_times_dropOff_locations"],
-    )
+    delivery_ids_map = {}
+    for delivery in instance.deliveries:
+        path_pair = (delivery.pickup_loc, delivery.dropoff_loc)
+        if path_pair not in delivery_ids_map:
+            delivery_ids_map[path_pair] = []
+        delivery_ids_map[path_pair].append(delivery.delivery_id)
+
+    print(delivery_ids_map)
+
+    courier_routes = []
     for courier_id, route in all_solutions[0]["routes"].items():
-        if route:  # Check if the route is not empty
-            print(f"Courier {courier_id}'s length route: {len(route)}")
+        courier_route = CourierRoute(courier_id, [])
+        for pair in route:
+            node = delivery_ids_map[pair].pop()
+            courier_route.nodes.append(node)
+            courier_route.nodes.append(node)
+        courier_routes.append(courier_route)
+        # if route:  # Check if the route is not empty
+        #     print(f"Courier {courier_id}'s length route: {len(route)}", route)
+
+    return InstanceSolution(instance.instance_name, courier_routes)
+
+    # print(
+    #     "best sol: total arrival times at drop-off location",
+    #     all_solutions[0]["total_arrival_times_dropOff_locations"],
+    # )
+    # for courier_id, route in all_solutions[0]["routes"].items():
+    #     if route:  # Check if the route is not empty
+    #         print(f"Courier {courier_id}'s length route: {len(route)}", route)
             # print(f"Courier {courier_id}'s route: {route}")
 
 
