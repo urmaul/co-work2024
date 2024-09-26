@@ -331,11 +331,11 @@ def solve_greedy2(instance: Instance):
             delivery_ids_map[path_pair] = []
         delivery_ids_map[path_pair].append(delivery.delivery_id)
 
-    print(delivery_ids_map)
+    # print(delivery_ids_map)
 
     courier_routes = []
-    for courier_id, route in all_solutions[0]["routes"].items():
-        courier_route = CourierRoute(courier_id, [])
+    for courier_index, route in all_solutions[0]["routes"].items():
+        courier_route = CourierRoute(instance.couriers[courier_index].courier_id, [])
         for pair in route:
             node = delivery_ids_map[pair].pop()
             courier_route.nodes.append(node)

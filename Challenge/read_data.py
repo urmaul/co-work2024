@@ -74,17 +74,28 @@ def load_deliveries_from_csv(filepath):
     return deliveries
 
 
+# # Function to load travel time matrix from CSV
+# def load_travel_time_from_csv(filepath):
+#     travel_time = []
+#     with open(filepath, 'r') as file:
+#         reader = csv.reader(file)
+#         for row in reader:
+#             if row[0] == 'Locations':
+#                 travel_time.append([val for val in row])
+#             else:
+#                 travel_time.append([int(val) for val in row])  # Convert the row values to integers, skip the location index (first column)
+#     return travel_time
+
 # Function to load travel time matrix from CSV
 def load_travel_time_from_csv(filepath):
-    travel_time = []
-    with open(filepath, 'r') as file:
-        reader = csv.reader(file)
-        for row in reader:
-            if row[0] == 'Locations':
-                travel_time.append([val for val in row])
-            else:
-                travel_time.append([int(val) for val in row])  # Convert the row values to integers, skip the location index (first column)
-    return travel_time
+  travel_time = []
+  with open(filepath, 'r') as file:
+    reader = csv.reader(file)
+    next(reader)  # Skip the header
+    for row in reader:
+      travel_time.append([int(val) for val in row[
+                                              1:]])  # Convert the row values to integers, skip the location index (first column)
+  return travel_time
 
 
 # Function to process each instance folder and look for couriers.csv, deliveries.csv, and traveltime.csv
