@@ -4,7 +4,7 @@ import random
 import itertools
 
 # /Users/lorenareyes/Library/CloudStorage/OneDrive-UniversidaddelaSabana/workspace_python/co-work2024-main-5/Challenge/training_data/1adef166-1111-45fd-b722-0f817c7fa055
-PATH = "/Users/lorenareyes/Library/CloudStorage/OneDrive-UniversidaddelaSabana/workspace_python/co-work2024-main-5/Challenge/training_data/1adef166-1111-45fd-b722-0f817c7fa055/"
+PATH = "/Users/lorenareyes/Library/CloudStorage/OneDrive-UniversidaddelaSabana/workspace_python/co-work2024-main-5/Challenge/training_data/ae2e3aac-1651-469c-9366-879a1142ed36/"
 # 1adef166-1111-45fd-b722-0f817c7fa055
 # 1ad01be7-2897-4c4f-83f0-cfa7953cc8b8
 # medium
@@ -538,6 +538,39 @@ def optimize_routes_randomly(
 
 
 all_solutions = []
+
+(
+    routes0,
+    updated_couriers,
+    travel_times,
+    capacities,
+    cap_utilization,
+    arrival_times,
+    total_travel_times,
+    dropoff_counts,
+) = improved_assignment_with_balanced_constraints(
+    pairs, courier_positions, tt, courier_capacity, e, l, cap_utilization
+)
+
+solution_0 = store_solution(
+    routes0, courier_positions, courier_capacity, cap_utilization, arrival_times
+)
+
+print(
+    "Total arrival times at drop-off locations:",
+    solution_0["total_arrival_times_dropOff_locations"],
+)
+
+# Validate that all deliveries are satisfied
+if validate_all_deliveries_assigned(routes0, sorted_pairs):
+    print("All deliveries are assigned correctly!")
+else:
+    print("Some deliveries are missing or unassigned.")
+
+# Store the first solution
+all_solutions.append(solution_0)
+all_solutions.sort(key=lambda x: x["total_arrival_times_dropOff_locations"])
+
 
 (
     routes0,
