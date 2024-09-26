@@ -143,7 +143,7 @@ class HeuristicModel(ModelComputationChall):
             if sum(delivery_time) <= time_limit and sum(delivery_load) <= self.courier_details[random_courier_ID-1].capacity:  # ToDo: Fix it with courier index
                 break
             else:       # restart the search process
-                print(f"Delivery time: {sum(delivery_time)} and sum of load : {sum(delivery_load)} \n")
+                # print(f"Delivery time: {sum(delivery_time)} and sum of load : {sum(delivery_load)} \n")
                 delivery_time = []
                 delivery_load = []
                 delivery_details = copy.deepcopy(delivery_details_copy)
@@ -170,14 +170,14 @@ class HeuristicModel(ModelComputationChall):
             delivery_load, delivery_time, random_courier_ID, random_order_list, delivery_details = self.create_heu_model(delivery_details, courier_ID, time_limit, max_pickup, already_served_order)
             courier_order_assignment[random_courier_ID] = random_order_list
             objective_val[random_courier_ID] = sum(delivery_time)
-            # print(f"courier {random_courier_ID} served order {random_order_list}")
+            print(f"courier {random_courier_ID} served order {random_order_list}")
             no_iter +=1
             order_list = np.unique([delivery_details[idx].delivery_id for idx in range(len(delivery_details))])
             courier_ID.remove(random_courier_ID)
             np.append(already_served_order, random_order_list)
             #
-            print(f"Order list : {len(order_list)}")
-            print(f"NO of iteration {no_iter}")
+            # print(f"Order list : {len(order_list)}")
+            # print(f"NO of iteration {no_iter}")
             if len(order_list) < 4 or len(courier_ID) <= 0 or no_iter > np.ceil(len(original_order_list)/max_pickup)+10:
                 break
         return courier_order_assignment, objective_val
