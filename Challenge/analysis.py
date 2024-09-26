@@ -55,9 +55,10 @@ else:
     courier_order_assignment, objective_val = model_inst_heu.find_courier_assignment()
     #
     # Save the result
-    InstanceSolution(instance_name = filefolders[file_idx], 
-                     courier_routes = [courier_order_assignment[idx] for idx in courier_order_assignment])
+    solution =  InstanceSolution(instance_name = filefolders[file_idx], 
+                    #  courier_routes = [courier_order_assignment[idx] for idx in courier_order_assignment])
+                     courier_routes = [])
     # Courier route
     for key  in courier_order_assignment:
-        CourierRoute(courier_id = key, 
-                    nodes = courier_order_assignment[key])
+        solution.courier_routes.append(CourierRoute(courier_id = key, 
+                    nodes = courier_order_assignment[key]))
