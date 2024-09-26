@@ -56,13 +56,6 @@ def solve_via_om(instance: Instance) -> InstanceSolution:
     return model_inst.to_solution()
 
 
-def solve_greedy(instance: Instance) -> InstanceSolution:
-    # TODO: solve the instance
-
-    # return solve_dumb(instance)
-    return solve_greedy2_with_files(instance)
-
-
 def write_solution(result_folder: str, solution: InstanceSolution):
     file = open(f"{result_folder}/f{solution.instance_name}.csv", "w")
 

@@ -29,8 +29,9 @@ class Delivery:
                f"Time Window Start={self.time_window_start}, Pickup Stacking Id={self.pickup_stacking_id}, Dropoff Loc={self.dropoff_loc})"
 
 class Instance:
-    def __init__(self, instance_name: str, couriers: List[Courier], deliveries: List[Delivery], travel_time):
+    def __init__(self, instance_name: str, instance_path: str, couriers: List[Courier], deliveries: List[Delivery], travel_time):
         self.instance_name = instance_name
+        self.instance_path = instance_path
         self.couriers = couriers
         self.deliveries = deliveries
         self.travel_time = travel_time
@@ -131,6 +132,7 @@ def process_instance_folder(instance_folder, instance_folder_path):
 
     return Instance(
                     instance_folder,
+                    instance_folder_path,
                     couriers,
                     deliveries,
                     travel_time

@@ -14,7 +14,7 @@ class Score:
         return f"{self.hard}/{self.soft}"
 
 def solution_score(solution: InstanceSolution, instance: Instance) -> Score:
-    hard = 0
+    hard = len(solution.courier_routes) - len(instance.couriers)
     for courier_route in solution.courier_routes:
         route = Route(courier_route.courier_id, courier_route.nodes)
         if not is_feasible(route, instance.couriers, instance.deliveries, instance.travel_time):

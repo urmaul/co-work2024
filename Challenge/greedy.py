@@ -8,7 +8,8 @@ from read_data import Instance, Courier, Delivery
 from solution import CourierRoute, InstanceSolution
 
 def solve_greedy2(instance: Instance):
-    PATH = f"Challenge/training_data/{instance.instance_name}/"
+    # PATH = f"Challenge/training_data/{instance.instance_name}/"
+    PATH = f"{instance.instance_path}/"
 
     # Provide the full file paths
     file1_path = PATH + "couriers.csv"
