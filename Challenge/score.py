@@ -14,11 +14,12 @@ class Score:
         return f"{self.hard}/{self.soft}"
 
 def solution_score(solution: InstanceSolution, instance: Instance) -> Score:
-    hard = len(solution.courier_routes) - len(instance.couriers)
+    hard = len(solution.courier_routes) - len(instance.couriers) # missing couriers
     for courier_route in solution.courier_routes:
         route = Route(courier_route.courier_id, courier_route.nodes)
         if not is_feasible(route, instance.couriers, instance.deliveries, instance.travel_time):
             hard += 1
+        hard += max(0, len(courier_route.nodes) - 8) # More penalty for long routes
 
     soft = 0
 
@@ -46,7 +47,7 @@ def route_soft(courier_route: CourierRoute, instance: Instance) -> int:
             # This is dropoff
             new_location = delivery.dropoff_loc
             current_time = current_time + instance.travel_time[prev_location - 1][new_location - 1]
-            soft += current_time - start_times[node]
+            soft += current_time - start_times[node] - instance.travel_time[delivery.pickup_loc - 1][delivery.dropoff_loc - 1]
             prev_location = new_location
     
     return soft

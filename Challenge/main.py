@@ -16,6 +16,8 @@ def solve(instance: Instance) -> InstanceSolution:
         solve_sian(instance),
     ]
 
+    print([(s.algo, solution_score(s, instance)) for s in solutions])
+
     best_solution = solutions[0]
     best_score = Score(1000, 1000)
     for solution in solutions:

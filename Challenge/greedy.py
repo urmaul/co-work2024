@@ -160,16 +160,16 @@ def solve_greedy2(instance: Instance):
         routes0, courier_positions, courier_capacity, cap_utilization, arrival_times
     )
 
-    print(
-        "Total arrival times at drop-off locations:",
-        solution_0["total_arrival_times_dropOff_locations"],
-    )
+    # print(
+    #     "Total arrival times at drop-off locations:",
+    #     solution_0["total_arrival_times_dropOff_locations"],
+    # )
 
     # Validate that all deliveries are satisfied
-    if validate_all_deliveries_assigned(routes0, sorted_pairs):
-        print("All deliveries are assigned correctly!")
-    else:
-        print("Some deliveries are missing or unassigned.")
+    # if validate_all_deliveries_assigned(routes0, sorted_pairs):
+    #     print("All deliveries are assigned correctly!")
+    # else:
+    #     print("Some deliveries are missing or unassigned.")
 
     # Store the first solution
     all_solutions.append(solution_0)
@@ -193,16 +193,16 @@ def solve_greedy2(instance: Instance):
         routes0, courier_positions, courier_capacity, cap_utilization, arrival_times
     )
 
-    print(
-        "Total arrival times at drop-off locations:",
-        solution_1["total_arrival_times_dropOff_locations"],
-    )
+    # print(
+    #     "Total arrival times at drop-off locations:",
+    #     solution_1["total_arrival_times_dropOff_locations"],
+    # )
 
     # Validate that all deliveries are satisfied
-    if validate_all_deliveries_assigned(routes0, sorted_pairs):
-        print("All deliveries are assigned correctly!")
-    else:
-        print("Some deliveries are missing or unassigned.")
+    # if validate_all_deliveries_assigned(routes0, sorted_pairs):
+    #     print("All deliveries are assigned correctly!")
+    # else:
+    #     print("Some deliveries are missing or unassigned.")
 
     # Store the first solution
     all_solutions.append(solution_1)
@@ -219,10 +219,10 @@ def solve_greedy2(instance: Instance):
     )
 
     # Validate that all deliveries are satisfied
-    if validate_all_deliveries_assigned(optimized_routes, sorted_pairs):
-        print("All deliveries are assigned correctly!")
-    else:
-        print("Some deliveries are missing or unassigned.")
+    # if validate_all_deliveries_assigned(optimized_routes, sorted_pairs):
+    #     print("All deliveries are assigned correctly!")
+    # else:
+    #     print("Some deliveries are missing or unassigned.")
 
     solution_2 = store_solution(
         optimized_routes,
@@ -232,10 +232,10 @@ def solve_greedy2(instance: Instance):
         updated_arrival_times,
     )
 
-    print(
-        "Total arrival times at drop-off locations sol 2:",
-        solution_2["total_arrival_times_dropOff_locations"],
-    )
+    # print(
+    #     "Total arrival times at drop-off locations sol 2:",
+    #     solution_2["total_arrival_times_dropOff_locations"],
+    # )
 
     # Store the second solution
     all_solutions.append(solution_2)
@@ -302,22 +302,22 @@ def solve_greedy2(instance: Instance):
             optimized_routes2 = new_optimized_routes2
             best_solution = new_solution
             best_total_arrival_time = new_total_arrival_time
-            print(
-                f"Iteration {iteration + 1}: Improved total arrival time to {best_total_arrival_time}"
-            )
+            # print(
+            #     f"Iteration {iteration + 1}: Improved total arrival time to {best_total_arrival_time}"
+            # )
 
     # Validate that all deliveries are satisfied
-    if validate_all_deliveries_assigned(optimized_routes2, sorted_pairs):
-        print("All deliveries are assigned correctly!")
-    else:
-        print("Some deliveries are missing or unassigned.")
+    # if validate_all_deliveries_assigned(optimized_routes2, sorted_pairs):
+    #     print("All deliveries are assigned correctly!")
+    # else:
+    #     print("Some deliveries are missing or unassigned.")
 
     solution_3 = best_solution
 
-    print(
-        "Total arrival times at drop-off locations sol 3:",
-        solution_3["total_arrival_times_dropOff_locations"],
-    )
+    # print(
+    #     "Total arrival times at drop-off locations sol 3:",
+    #     solution_3["total_arrival_times_dropOff_locations"],
+    # )
 
     # Store the third solution
     all_solutions.append(solution_3)
